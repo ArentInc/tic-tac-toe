@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import './App.css'
 
-const Square = (props: { value: number, onClick: () => void }) => {
+const Square = (props: { value: string, onClick: () => void }) => {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
@@ -10,17 +10,45 @@ const Square = (props: { value: number, onClick: () => void }) => {
 }
 
 const Board = () => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [xIsNext, setXIsNext] = useState(false);
-
-  const status = useMemo(() => 'Next player: ' + (xIsNext ? 'X' : 'O'), [xIsNext]);
-
-  const handleClick = (i: number) => {
-    const newSquares = squares.slice();
-    newSquares[i] = xIsNext ? 'X' : 'O';
-    setSquares(newSquares);
-    setXIsNext(!xIsNext);
+  const calculateWinner = (squares: string[]) => {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a, b, c] = lines[i];
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
+    }
+    return null;
   }
+
+  const [squares, setSquares] = useState<string[]>(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState<boolean>(false);
+
+  const winner = useMemo(() => calculateWinner(squares), [squares]);
+  const status = useMemo(
+    () => winner ? 'Winner: ' + winner : 'Next player: ' + (xIsNext ? 'X' : 'O'),
+    [xIsNext, winner]
+  );
+
+  const handleClick = useCallback(
+    (i: number) => {
+      const newSquares = squares.slice();
+      if (winner || newSquares[i]) return;
+      newSquares[i] = xIsNext ? 'X' : 'O';
+      setSquares(newSquares);
+      setXIsNext(!xIsNext);
+    },
+    [xIsNext, squares, winner],
+  )
 
   return (
     <div>
