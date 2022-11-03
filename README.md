@@ -1,5 +1,7 @@
 # Tic Tac Toe
 
+![tic-tac-toe](https://user-images.githubusercontent.com/3115651/199695512-e16b38df-073e-4a3a-a9d3-eed7ce6bbb46.png)
+
 ## 実行環境
 
 - [Node.js](https://nodejs.org/) 16.18.3 以降
